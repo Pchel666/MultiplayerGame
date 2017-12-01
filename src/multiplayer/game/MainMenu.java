@@ -22,7 +22,7 @@ public class MainMenu extends BasicGameState {
 	private boolean quitPress;
 	private boolean p;
 	private boolean h;
-
+	
 	public MainMenu(int startmenu) {
 		
 	}
