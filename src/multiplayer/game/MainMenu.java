@@ -5,6 +5,7 @@ import org.newdawn.slick.*;
 import org.newdawn.slick.state.*;
 
 public class MainMenu extends BasicGameState {
+	
 	private Image play;
 	private Image playHover;
 	private Image playPressed;

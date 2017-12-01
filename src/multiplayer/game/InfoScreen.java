@@ -8,6 +8,7 @@ import org.newdawn.slick.state.BasicGameState;
 import org.newdawn.slick.state.StateBasedGame;
 
 public class InfoScreen extends BasicGameState {
+	
 	private int frameCount;
 
 	public InfoScreen(int info) {
