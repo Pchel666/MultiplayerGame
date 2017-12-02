@@ -9,13 +9,11 @@ public class GridPoint {
 	public boolean passable;
 	public int x;
 	public int y;
-	public Player occupant;
 	
 	public GridPoint(int xx, int yy) throws SlickException {
 		img = new Image("res/GridPoint.png");
 		passable = true;
 		x = xx;
 		y = yy;
-		occupant = null;
 	}
 }
