@@ -99,6 +99,8 @@ public class MainMenu extends BasicGameState {
 				h = true;
 			}
 			else if(h && !p) {
+				p = false;
+				h = false;
 				sbg.enterState(1);
 			}
 			else if(h) {
@@ -115,6 +117,8 @@ public class MainMenu extends BasicGameState {
 				h = true;
 			}
 			else if(h && !p) {
+				p = false;
+				h = false;
 				sbg.enterState(2);
 			}
 			else if(h) {
@@ -131,6 +135,8 @@ public class MainMenu extends BasicGameState {
 				h = true;
 			}
 			else if(h && !p) {
+				p = false;
+				h = false;
 				System.exit(0);
 			}
 			else if(h) {

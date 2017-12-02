@@ -20,10 +20,10 @@ public class InfoScreen extends BasicGameState {
 	}
 
 	public void render(GameContainer gc, StateBasedGame sbg, Graphics g) throws SlickException {
-		g.drawString("Program written by Alexander Popov", 300, 300);
+		g.drawString("Written by Alexander Popov", 300, 300);
 		g.drawString("Final project", 300, 315);
 		g.drawString("Class: Network Programming, COMP2100-01/02", 300, 330);
-		g.drawString("Using Slick2D engine", 300, 345);
+		g.drawString("Engine: Slick2D", 300, 345);
 		g.drawString("Press ESC to go back", 300, 360);
 		if(frameCount >= 60 && frameCount < 120) {
 			g.drawString(".", 480, 360);
