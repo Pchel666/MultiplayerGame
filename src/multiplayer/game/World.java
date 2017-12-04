@@ -35,7 +35,6 @@ public class World extends BasicGameState{
 	private Random rand;
 	private int randInt1;
 	private int randInt2;
-	private boolean needRelocation;
 	private int maxScore;
 	//Server variables
 	public boolean stopServer;
@@ -54,10 +53,9 @@ public class World extends BasicGameState{
 	public void init(GameContainer gc, StateBasedGame sbg) throws SlickException {
 		maxScore = 5;
 		rand = new Random();
-		needRelocation = false;
 		randInt1 = rand.nextInt(48)+1;
 		randInt2 = rand.nextInt(48)+1;
-		receivedMsgSplit = new String[5];
+		receivedMsgSplit = new String[3];
 		stopServer = false;
 		firstRun = true;
 		gridWidth = 50;
@@ -99,15 +97,8 @@ public class World extends BasicGameState{
 		grid[player2.posX][player2.posY].passable = true;
 		player2.posX = Integer.parseInt(receivedMsgSplit[0]);
 		player2.posY = Integer.parseInt(receivedMsgSplit[1]);
-		player2.score = Integer.parseInt(receivedMsgSplit[2]);
 		grid[player2.posX][player2.posY].passable = false;
-		pause2 = Integer.parseInt(receivedMsgSplit[3]);
-		if (Integer.parseInt(receivedMsgSplit[4]) != 0) {
-			needRelocation = true;
-		}
-		else {
-			needRelocation = false;
-		}
+		pause2 = Integer.parseInt(receivedMsgSplit[2]);
 		if(player1.posX == pickUp.posX && player1.posY == pickUp.posY) {
 			player1.score++;
 			randInt1 = rand.nextInt(48)+1;
@@ -124,8 +115,8 @@ public class World extends BasicGameState{
 			}
 			pickUp.relocate(randInt1, randInt2);
 		}
-		if (needRelocation) {
-			needRelocation = false;
+		if(player2.posX == pickUp.posX && player2.posY == pickUp.posY) {
+			player2.score++;
 			randInt1 = rand.nextInt(48)+1;
 			if (randInt1 == player1.posX || randInt1 == player2.posX) {
 				while (randInt1 == player1.posX || randInt1 == player2.posX) {
@@ -165,7 +156,7 @@ public class World extends BasicGameState{
 	public void update(GameContainer gc, StateBasedGame sbg, int d) throws SlickException {
 		if (player1.score >= maxScore) {
 			try {
-				msg = player1.posX + "," + player1.posY + "," + player1.score + "," + pause1 + "," + pickUp.posX + "," + pickUp.posY;
+				msg = player1.posX + "," + player1.posY + "," + player1.score + "," + pause1 + "," + pickUp.posX + "," + pickUp.posY + "," + player2.score;
 				dos.writeUTF(msg);
 				dos.close();
 				dis.close();
@@ -178,6 +169,8 @@ public class World extends BasicGameState{
 		}
 		if (player2.score >= maxScore) {
 			try {
+				msg = player1.posX + "," + player1.posY + "," + player1.score + "," + pause1 + "," + pickUp.posX + "," + pickUp.posY + "," + player2.score;
+				dos.writeUTF(msg);
 				dos.close();
 				dis.close();
 				socket.close();
@@ -205,15 +198,15 @@ public class World extends BasicGameState{
 				socket=serverSocket.accept();
 				dos = new DataOutputStream(socket.getOutputStream());
 				dis = new DataInputStream(socket.getInputStream());
-				msg = player1.posX + "," + player1.posY + "," + player1.score + "," + pause1 + "," + pickUp.posX + "," + pickUp.posY;
-				receivedMsg = player2.posX + "," + player2.posY + "," + player2.score + "," + pause2 + ",";
+				msg = player1.posX + "," + player1.posY + "," + player1.score + "," + pause1 + "," + pickUp.posX + "," + pickUp.posY + "," + player2.score;
+				receivedMsg = player2.posX + "," + player2.posY + "," + pause2;
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 		}
 		if (!firstRun) {
 			try {
-				msg = player1.posX + "," + player1.posY + "," + player1.score + "," + pause1 + "," + pickUp.posX + "," + pickUp.posY;
+				msg = player1.posX + "," + player1.posY + "," + player1.score + "," + pause1 + "," + pickUp.posX + "," + pickUp.posY + "," + player2.score;
 				dos.writeUTF(msg);
 				receivedMsg = dis.readUTF();
 			} catch (IOException e) {

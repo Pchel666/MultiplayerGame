@@ -31,7 +31,6 @@ public class WorldJoin extends BasicGameState {
 	private int score2;
 	private boolean firstRun;
 	private PickUp pickUp;
-	private boolean needRelocation;
 	private int maxScore;
 	//Client variables
 	public boolean stopClient;
@@ -52,7 +51,7 @@ public class WorldJoin extends BasicGameState {
 		maxScore = 5;
 		hostName = "localhost";
 		scanner = new Scanner(System.in);
-		receivedMsgSplit = new String[6];
+		receivedMsgSplit = new String[7];
 		stopClient = false;
 		firstRun = true;
 		gridWidth = 50;
@@ -99,10 +98,7 @@ public class WorldJoin extends BasicGameState {
 		pause1 = Integer.parseInt(receivedMsgSplit[3]);
 		pickUp.posX = Integer.parseInt(receivedMsgSplit[4]);
 		pickUp.posY = Integer.parseInt(receivedMsgSplit[5]);
-		if(player2.posX == pickUp.posX && player2.posY == pickUp.posY) {
-			player2.score++;
-			needRelocation = true;
-		}
+		player2.score = Integer.parseInt(receivedMsgSplit[6]);
 		score1 = player1.score;
 		score2 = player2.score;
 		for (int i = 0; i < gridHeight; i++) {
@@ -138,9 +134,6 @@ public class WorldJoin extends BasicGameState {
 		}
 		if (player2.score >= maxScore) {
 			try {
-				msg = player2.posX + "," + player2.posY + "," + player2.score + "," + pause2 + "," + ((needRelocation) ? 1 : 0);
-				dos.writeUTF(msg);
-				needRelocation = false;
 				dos.close();
 				dis.close();
 				socket.close();
@@ -151,6 +144,8 @@ public class WorldJoin extends BasicGameState {
 		}
 		if (stopClient) {
 			try {
+				msg = player2.posX + "," + player2.posY + "," + pause2;
+				dos.writeUTF(msg);
 				dos.close();
 				dis.close();
 				socket.close();
@@ -167,17 +162,16 @@ public class WorldJoin extends BasicGameState {
 				socket = new Socket(hostName, 15000);
 				dos = new DataOutputStream(socket.getOutputStream());
 				dis = new DataInputStream(socket.getInputStream());
-				msg = player2.posX + "," + player2.posY + "," + player2.score + "," + pause2 + "," + ((needRelocation) ? 1 : 0);
-				receivedMsg = player1.posX + "," + player1.posY + "," + player1.score + "," + pause1;
+				msg = player2.posX + "," + player2.posY + "," + pause2;
+				receivedMsg = player1.posX + "," + player1.posY + "," + player1.score + "," + pause1 + "," + player2.score;
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 		}
 		if (!firstRun) {
 			try {
-				msg = player2.posX + "," + player2.posY + "," + player2.score + "," + pause2 + "," + ((needRelocation) ? 1 : 0);
+				msg = player2.posX + "," + player2.posY + "," + pause2;
 				dos.writeUTF(msg);
-				needRelocation = false;
 				receivedMsg = dis.readUTF();
 			} catch (IOException e) {
 				//e.printStackTrace();
