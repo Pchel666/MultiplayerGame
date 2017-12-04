@@ -4,9 +4,9 @@ import org.newdawn.slick.Image;
 
 public class Player {
 	
+	public Image image;
 	public int playerNumber;
 	public int score;
-	public Image image;
 	public int posX;
 	public int posY;
 	
