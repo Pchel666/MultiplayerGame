@@ -4,6 +4,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
+import java.util.Scanner;
 
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
@@ -31,6 +32,7 @@ public class WorldJoin extends BasicGameState {
 	private boolean firstRun;
 	private PickUp pickUp;
 	private boolean needRelocation;
+	private int maxScore;
 	//Client variables
 	public boolean stopClient;
 	private static Socket socket;
@@ -39,12 +41,17 @@ public class WorldJoin extends BasicGameState {
 	private String msg;
 	private String receivedMsg;
 	private String[] receivedMsgSplit;
+	private String hostName;
+	private Scanner scanner;
 
 	public WorldJoin(int worldjoin) {
 		
 	}
 
 	public void init(GameContainer gc, StateBasedGame sbg) throws SlickException {
+		maxScore = 5;
+		hostName = "localhost";
+		scanner = new Scanner(System.in);
 		receivedMsgSplit = new String[6];
 		stopClient = false;
 		firstRun = true;
@@ -119,6 +126,26 @@ public class WorldJoin extends BasicGameState {
 	}
 
 	public void update(GameContainer gc, StateBasedGame sbg, int d) throws SlickException {
+		if (player1.score >= maxScore) {
+			try {
+				dos.close();
+				dis.close();
+				socket.close();
+				sbg.enterState(5);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		if (player2.score >= maxScore) {
+			try {
+				dos.close();
+				dis.close();
+				socket.close();
+				sbg.enterState(6);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
 		if (stopClient) {
 			try {
 				dos.close();
@@ -132,7 +159,9 @@ public class WorldJoin extends BasicGameState {
 		if (firstRun) {
 			firstRun = false;
 			try {
-				socket = new Socket("localhost", 15000);
+				System.out.println("Enter host name: ");
+				hostName = scanner.nextLine();
+				socket = new Socket(hostName, 15000);
 				dos = new DataOutputStream(socket.getOutputStream());
 				dis = new DataInputStream(socket.getInputStream());
 				msg = player2.posX + "," + player2.posY + "," + player2.score + "," + pause2 + "," + ((needRelocation) ? 1 : 0);
@@ -148,31 +177,33 @@ public class WorldJoin extends BasicGameState {
 				needRelocation = false;
 				receivedMsg = dis.readUTF();
 			} catch (IOException e) {
-				stopClient = true;
+				if (player1.score < maxScore && player2.score < maxScore) {
+					stopClient = true;
+				}
 			}
 		}
-		if(gc.getInput().isKeyPressed(Input.KEY_UP) && pause1 == 0 && pause2 == 0) {
+		if(gc.getInput().isKeyDown(Input.KEY_UP) && pause1 == 0 && pause2 == 0) {
 			if(grid[player2.posX][player2.posY-1].passable) {
 				grid[player2.posX][player2.posY].passable = true;
 				player2.posY--;
 				grid[player2.posX][player2.posY].passable = false;
 			}
 		}
-		if(gc.getInput().isKeyPressed(Input.KEY_DOWN) && pause1 == 0 && pause2 == 0) {
+		if(gc.getInput().isKeyDown(Input.KEY_DOWN) && pause1 == 0 && pause2 == 0) {
 			if(grid[player2.posX][player2.posY+1].passable) {
 				grid[player2.posX][player2.posY].passable = true;
 				player2.posY++;
 				grid[player2.posX][player2.posY].passable = false;
 			}
 		}
-		if(gc.getInput().isKeyPressed(Input.KEY_LEFT) && pause1 == 0 && pause2 == 0) {
+		if(gc.getInput().isKeyDown(Input.KEY_LEFT) && pause1 == 0 && pause2 == 0) {
 			if(grid[player2.posX-1][player2.posY].passable) {
 				grid[player2.posX][player2.posY].passable = true;
 				player2.posX--;
 				grid[player2.posX][player2.posY].passable = false;
 			}
 		}
-		if(gc.getInput().isKeyPressed(Input.KEY_RIGHT) && pause1 == 0 && pause2 == 0) {
+		if(gc.getInput().isKeyDown(Input.KEY_RIGHT) && pause1 == 0 && pause2 == 0) {
 			if(grid[player2.posX+1][player2.posY].passable) {
 				grid[player2.posX][player2.posY].passable = true;
 				player2.posX++;

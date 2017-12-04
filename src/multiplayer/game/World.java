@@ -36,6 +36,7 @@ public class World extends BasicGameState{
 	private int randInt1;
 	private int randInt2;
 	private boolean needRelocation;
+	private int maxScore;
 	//Server variables
 	public boolean stopServer;
 	private static ServerSocket serverSocket;
@@ -51,6 +52,7 @@ public class World extends BasicGameState{
 	}
 
 	public void init(GameContainer gc, StateBasedGame sbg) throws SlickException {
+		maxScore = 5;
 		rand = new Random();
 		needRelocation = false;
 		randInt1 = rand.nextInt(48)+1;
@@ -161,6 +163,28 @@ public class World extends BasicGameState{
 	}
 
 	public void update(GameContainer gc, StateBasedGame sbg, int d) throws SlickException {
+		if (player1.score >= maxScore) {
+			try {
+				dos.close();
+				dis.close();
+				socket.close();
+				serverSocket.close();
+				sbg.enterState(5);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		if (player2.score >= maxScore) {
+			try {
+				dos.close();
+				dis.close();
+				socket.close();
+				serverSocket.close();
+				sbg.enterState(6);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
 		if (stopServer) {
 			try {
 				dos.close();
@@ -191,31 +215,33 @@ public class World extends BasicGameState{
 				dos.writeUTF(msg);
 				receivedMsg = dis.readUTF();
 			} catch (IOException e) {
-				stopServer = true;
+				if (player1.score < maxScore && player2.score < maxScore) {
+					stopServer = true;
+				}
 			}
 		}
-		if(gc.getInput().isKeyPressed(Input.KEY_UP) && pause1 == 0 && pause2 == 0) {
+		if(gc.getInput().isKeyDown(Input.KEY_UP) && pause1 == 0 && pause2 == 0) {
 			if(grid[player1.posX][player1.posY-1].passable) {
 				grid[player1.posX][player1.posY].passable = true;
 				player1.posY--;
 				grid[player1.posX][player1.posY].passable = false;
 			}
 		}
-		if(gc.getInput().isKeyPressed(Input.KEY_DOWN) && pause1 == 0 && pause2 == 0) {
+		if(gc.getInput().isKeyDown(Input.KEY_DOWN) && pause1 == 0 && pause2 == 0) {
 			if(grid[player1.posX][player1.posY+1].passable) {
 				grid[player1.posX][player1.posY].passable = true;
 				player1.posY++;
 				grid[player1.posX][player1.posY].passable = false;
 			}
 		}
-		if(gc.getInput().isKeyPressed(Input.KEY_LEFT) && pause1 == 0 && pause2 == 0) {
+		if(gc.getInput().isKeyDown(Input.KEY_LEFT) && pause1 == 0 && pause2 == 0) {
 			if(grid[player1.posX-1][player1.posY].passable) {
 				grid[player1.posX][player1.posY].passable = true;
 				player1.posX--;
 				grid[player1.posX][player1.posY].passable = false;
 			}
 		}
-		if(gc.getInput().isKeyPressed(Input.KEY_RIGHT) && pause1 == 0 && pause2 == 0) {
+		if(gc.getInput().isKeyDown(Input.KEY_RIGHT) && pause1 == 0 && pause2 == 0) {
 			if(grid[player1.posX+1][player1.posY].passable) {
 				grid[player1.posX][player1.posY].passable = true;
 				player1.posX++;
