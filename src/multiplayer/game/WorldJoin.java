@@ -138,6 +138,9 @@ public class WorldJoin extends BasicGameState {
 		}
 		if (player2.score >= maxScore) {
 			try {
+				msg = player2.posX + "," + player2.posY + "," + player2.score + "," + pause2 + "," + ((needRelocation) ? 1 : 0);
+				dos.writeUTF(msg);
+				needRelocation = false;
 				dos.close();
 				dis.close();
 				socket.close();
@@ -177,9 +180,7 @@ public class WorldJoin extends BasicGameState {
 				needRelocation = false;
 				receivedMsg = dis.readUTF();
 			} catch (IOException e) {
-				if (player1.score < maxScore && player2.score < maxScore) {
-					stopClient = true;
-				}
+				//e.printStackTrace();
 			}
 		}
 		if(gc.getInput().isKeyDown(Input.KEY_UP) && pause1 == 0 && pause2 == 0) {

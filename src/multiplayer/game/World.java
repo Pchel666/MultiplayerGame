@@ -165,6 +165,8 @@ public class World extends BasicGameState{
 	public void update(GameContainer gc, StateBasedGame sbg, int d) throws SlickException {
 		if (player1.score >= maxScore) {
 			try {
+				msg = player1.posX + "," + player1.posY + "," + player1.score + "," + pause1 + "," + pickUp.posX + "," + pickUp.posY;
+				dos.writeUTF(msg);
 				dos.close();
 				dis.close();
 				socket.close();
@@ -215,9 +217,7 @@ public class World extends BasicGameState{
 				dos.writeUTF(msg);
 				receivedMsg = dis.readUTF();
 			} catch (IOException e) {
-				if (player1.score < maxScore && player2.score < maxScore) {
-					stopServer = true;
-				}
+				//e.printStackTrace();
 			}
 		}
 		if(gc.getInput().isKeyDown(Input.KEY_UP) && pause1 == 0 && pause2 == 0) {
@@ -257,6 +257,7 @@ public class World extends BasicGameState{
 			}
 		}
 	}
+	
 	public int getID() {
 		return 3;
 	}
