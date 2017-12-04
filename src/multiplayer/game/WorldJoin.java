@@ -27,7 +27,6 @@ public class WorldJoin extends BasicGameState {
 	private Player player2;
 	private int score1;
 	private int score2;
-	private int thisPlayerNumber;
 	private boolean firstRun;
 	//Client variables
 	public boolean stopClient;
@@ -74,7 +73,6 @@ public class WorldJoin extends BasicGameState {
 		grid[player2.posX][player2.posY].passable = false;
 		score1 = 0;
 		score2 = 0;
-		thisPlayerNumber = 2;
 	}
 
 	public void render(GameContainer gc, StateBasedGame sbg, Graphics g) throws SlickException {
@@ -82,6 +80,42 @@ public class WorldJoin extends BasicGameState {
 			for (int j = 0; j < gridHeight; j++) {
 				grid[i][j].img.draw(250+10*i, 100+10*j);
 			}
+		}
+		switch(receivedMsg) {
+		case "UP":
+			grid[player1.posX][player1.posY].passable = true;
+			player1.posY--;
+			grid[player1.posX][player1.posY].passable = false;
+			receivedMsg = "";
+			break;
+		case "DOWN":
+			grid[player1.posX][player1.posY].passable = true;
+			player1.posY++;
+			grid[player1.posX][player1.posY].passable = false;
+			receivedMsg = "";
+			break;
+		case "LEFT":
+			grid[player1.posX][player1.posY].passable = true;
+			player1.posX--;
+			grid[player1.posX][player1.posY].passable = false;
+			receivedMsg = "";
+			break;
+		case "RIGHT":
+			grid[player1.posX][player1.posY].passable = true;
+			player1.posX++;
+			grid[player1.posX][player1.posY].passable = false;
+			receivedMsg = "";
+			break;
+		case "PAUSE":
+			pause = true;
+			receivedMsg = "";
+			break;
+		case "UNPAUSE":
+			pause = false;
+			receivedMsg = "";
+			break;
+		default:
+			break;
 		}
 		player1.image.draw(250+10*player1.posX, 100+10*player1.posY);
 		player2.image.draw(250+10*player2.posX, 100+10*player2.posY);
@@ -100,7 +134,6 @@ public class WorldJoin extends BasicGameState {
 				dos.close();
 				dis.close();
 				socket.close();
-				System.out.println("Client connection stopped");
 				sbg.enterState(0);
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -112,8 +145,8 @@ public class WorldJoin extends BasicGameState {
 				socket = new Socket("localhost", 15000);
 				dos = new DataOutputStream(socket.getOutputStream());
 				dis = new DataInputStream(socket.getInputStream());
-				msg = "Message from client";
-				receivedMsg = "No msg from server yet";
+				msg = "";
+				receivedMsg = "";
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -121,74 +154,54 @@ public class WorldJoin extends BasicGameState {
 		if (!firstRun && !stopClient) {
 			try {
 				dos.writeUTF(msg);
+				msg = "";
 				receivedMsg = dis.readUTF();
-				System.out.println(receivedMsg);
 			} catch (IOException e) {
 				e.printStackTrace();
 				stopClient = true;
 			}
 		}
 		if(gc.getInput().isKeyPressed(Input.KEY_UP) && !pause) {
-			if(thisPlayerNumber == 1 && grid[player1.posX][player1.posY-1].passable) {
-				grid[player1.posX][player1.posY].passable = true;
-				player1.posY--;
-				grid[player1.posX][player1.posY].passable = false;
-			}
-			if(thisPlayerNumber == 2 && grid[player2.posX][player2.posY-1].passable) {
+			if(grid[player2.posX][player2.posY-1].passable) {
 				grid[player2.posX][player2.posY].passable = true;
 				player2.posY--;
 				grid[player2.posX][player2.posY].passable = false;
+				msg = "UP";
 			}
 		}
 		if(gc.getInput().isKeyPressed(Input.KEY_DOWN) && !pause) {
-			if(thisPlayerNumber == 1 && grid[player1.posX][player1.posY+1].passable) {
-				grid[player1.posX][player1.posY].passable = true;
-				player1.posY++;
-				grid[player1.posX][player1.posY].passable = false;
-			}
-			if(thisPlayerNumber == 2 && grid[player2.posX][player2.posY+1].passable) {
+			if(grid[player2.posX][player2.posY+1].passable) {
 				grid[player2.posX][player2.posY].passable = true;
 				player2.posY++;
 				grid[player2.posX][player2.posY].passable = false;
+				msg = "DOWN";
 			}
 		}
 		if(gc.getInput().isKeyPressed(Input.KEY_LEFT) && !pause) {
-			if(thisPlayerNumber == 1 && grid[player1.posX-1][player1.posY].passable) {
-				grid[player1.posX][player1.posY].passable = true;
-				player1.posX--;
-				grid[player1.posX][player1.posY].passable = false;
-			}
-			if(thisPlayerNumber == 2 && grid[player2.posX-1][player2.posY].passable) {
+			if(grid[player2.posX-1][player2.posY].passable) {
 				grid[player2.posX][player2.posY].passable = true;
 				player2.posX--;
 				grid[player2.posX][player2.posY].passable = false;
+				msg = "LEFT";
 			}
 		}
 		if(gc.getInput().isKeyPressed(Input.KEY_RIGHT) && !pause) {
-			if(thisPlayerNumber == 1 && grid[player1.posX+1][player1.posY].passable) {
-				grid[player1.posX][player1.posY].passable = true;
-				player1.posX++;
-				grid[player1.posX][player1.posY].passable = false;
-			}
-			if(thisPlayerNumber == 2 && grid[player2.posX+1][player2.posY].passable) {
+			if(grid[player2.posX+1][player2.posY].passable) {
 				grid[player2.posX][player2.posY].passable = true;
 				player2.posX++;
 				grid[player2.posX][player2.posY].passable = false;
+				msg = "RIGHT";
 			}
 		}
 		if(gc.getInput().isKeyPressed(Input.KEY_ESCAPE)) {
 			if(!pause) {
 				pause = true;
+				msg = "PAUSE";
 			}
 			else if(pause) {
 				pause = false;
+				msg = "UNPAUSE";
 			}
-		}
-		if(gc.getInput().isKeyPressed(Input.KEY_1)) {
-			thisPlayerNumber = 1;
-		}
-		if(gc.getInput().isKeyPressed(Input.KEY_2)) {
-			thisPlayerNumber = 2;
 		}
 	}
 
