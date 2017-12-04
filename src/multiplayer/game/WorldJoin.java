@@ -1,6 +1,10 @@
 package multiplayer.game;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
+import java.net.Socket;
+
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
@@ -11,6 +15,7 @@ import org.newdawn.slick.state.StateBasedGame;
 
 public class WorldJoin extends BasicGameState {
 	
+	//Game variables
 	private GridPoint[][] grid;
 	private int gridWidth;
 	private int gridHeight;
@@ -23,13 +28,22 @@ public class WorldJoin extends BasicGameState {
 	private int score1;
 	private int score2;
 	private int thisPlayerNumber;
-	private Client client;
+	private boolean firstRun;
+	//Client variables
+	public boolean stopClient;
+	private static Socket socket;
+	private static DataOutputStream dos;
+	private static DataInputStream dis;
+	private String msg;
+	private String receivedMsg;
 
 	public WorldJoin(int worldjoin) {
 		
 	}
 
 	public void init(GameContainer gc, StateBasedGame sbg) throws SlickException {
+		stopClient = false;
+		firstRun = true;
 		gridWidth = 50;
 		gridHeight = 50;
 		gridWall = new Image("res/GridPointWall.png");
@@ -61,7 +75,6 @@ public class WorldJoin extends BasicGameState {
 		score1 = 0;
 		score2 = 0;
 		thisPlayerNumber = 2;
-		client = new Client();
 	}
 
 	public void render(GameContainer gc, StateBasedGame sbg, Graphics g) throws SlickException {
@@ -82,6 +95,39 @@ public class WorldJoin extends BasicGameState {
 	}
 
 	public void update(GameContainer gc, StateBasedGame sbg, int d) throws SlickException {
+		if (stopClient) {
+			try {
+				dos.close();
+				dis.close();
+				socket.close();
+				System.out.println("Client connection stopped");
+				sbg.enterState(0);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		if (firstRun) {
+			firstRun = false;
+			try {
+				socket = new Socket("localhost", 15000);
+				dos = new DataOutputStream(socket.getOutputStream());
+				dis = new DataInputStream(socket.getInputStream());
+				msg = "Message from client";
+				receivedMsg = "No msg from server yet";
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		if (!firstRun && !stopClient) {
+			try {
+				dos.writeUTF(msg);
+				receivedMsg = dis.readUTF();
+				System.out.println(receivedMsg);
+			} catch (IOException e) {
+				e.printStackTrace();
+				stopClient = true;
+			}
+		}
 		if(gc.getInput().isKeyPressed(Input.KEY_UP) && !pause) {
 			if(thisPlayerNumber == 1 && grid[player1.posX][player1.posY-1].passable) {
 				grid[player1.posX][player1.posY].passable = true;
@@ -131,7 +177,6 @@ public class WorldJoin extends BasicGameState {
 			}
 		}
 		if(gc.getInput().isKeyPressed(Input.KEY_ESCAPE)) {
-			client.stop = true;
 			if(!pause) {
 				pause = true;
 			}

@@ -4,37 +4,30 @@ import java.net.*;
 import java.io.*;
 
 public class Client {
-	public boolean stop;
+	public boolean stopClient;
+	private static Socket socket;
+	private static DataOutputStream dos;
+	private static DataInputStream dis;
+	private String msg;
+	private String receivedMsg;
 	
 	public Client() {
-		stop = false;
+		stopClient = false;
 	}
 	
 	public void start() throws IOException {
-		//Open your connection to a server, at port 15000
-		Socket s1 = new Socket("localhost", 15000);
-		//Output stream initialization
-		OutputStream s1out = s1.getOutputStream();
-		DataOutputStream dos = new DataOutputStream(s1out);
-		String msg = new String();
-		BufferedReader bufReader = new BufferedReader(new InputStreamReader(System.in));
-		//Get an input file handle from the socket and read the input
-		InputStream s1in = s1.getInputStream();
-		DataInputStream dis = new DataInputStream(s1in);
-		String receivedSt = new String();
-		while(!msg.equals("end")) {
-			receivedSt = dis.readUTF();
-			System.out.println("Server said: " + receivedSt);
-			System.out.println("Type in your message: ");
-			msg = bufReader.readLine();
+		socket = new Socket("localhost", 15000);
+		dos = new DataOutputStream(socket.getOutputStream());
+		dis = new DataInputStream(socket.getInputStream());
+		msg = "Message from client";
+		receivedMsg = dis.readUTF();
+		while(!stopClient) {
+			System.out.println(receivedMsg);
 			dos.writeUTF(msg);
 		}
-		//When done, just close the connection and exit
-		dis.close();
-		s1in.close();
-		s1.close();
 		dos.close();
-		s1out.close();
+		dis.close();
+		socket.close();
 		System.out.println("Client stopped");
 	}
 }
