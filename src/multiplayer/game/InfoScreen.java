@@ -20,19 +20,22 @@ public class InfoScreen extends BasicGameState {
 	}
 
 	public void render(GameContainer gc, StateBasedGame sbg, Graphics g) throws SlickException {
-		g.drawString("Written by Alexander Popov", 300, 300);
-		g.drawString("Final project", 300, 315);
-		g.drawString("Class: Network Programming, COMP2100-01/02", 300, 330);
-		g.drawString("Engine: Slick2D", 300, 345);
-		g.drawString("Press ESC to go back", 300, 360);
+		g.drawString("Host is player 1 (blue circle with a number 1 in it)", 240, 200);
+		g.drawString("Joining player is player 2 (blue circle with a number 2 in it)", 240, 215);
+		g.drawString("Collect red orbs to win, first to 5 wins", 240, 230);
+		g.drawString("Written by Alexander Popov", 240, 300);
+		g.drawString("Final project", 240, 315);
+		g.drawString("Class: Network Programming, COMP2100-01/02", 240, 330);
+		g.drawString("Engine: Slick2D", 240, 345);
+		g.drawString("Press ESC to go back", 240, 360);
 		if(frameCount >= 60 && frameCount < 120) {
-			g.drawString(".", 480, 360);
+			g.drawString(".", 420, 360);
 		}
 		else if(frameCount >= 120 && frameCount < 180) {
-			g.drawString("..", 480, 360);
+			g.drawString("..", 420, 360);
 		}
 		else if(frameCount >= 180 && frameCount < 240) {
-			g.drawString("...", 480, 360);
+			g.drawString("...", 420, 360);
 		}
 	}
 
