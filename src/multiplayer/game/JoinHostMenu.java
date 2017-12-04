@@ -90,7 +90,7 @@ public class JoinHostMenu extends BasicGameState {
 				h = true;
 			}
 			else if(h && !p) {
-				sbg.enterState(3);
+				sbg.enterState(4);
 			}
 			else if(h) {
 				p = false;

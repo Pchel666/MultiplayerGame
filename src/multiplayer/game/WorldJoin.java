@@ -9,8 +9,8 @@ import org.newdawn.slick.SlickException;
 import org.newdawn.slick.state.BasicGameState;
 import org.newdawn.slick.state.StateBasedGame;
 
-public class World extends BasicGameState{
-
+public class WorldJoin extends BasicGameState {
+	
 	private GridPoint[][] grid;
 	private int gridWidth;
 	private int gridHeight;
@@ -23,9 +23,9 @@ public class World extends BasicGameState{
 	private int score1;
 	private int score2;
 	private int thisPlayerNumber;
-	private Server server;
-	
-	public World(int world) {
+	private Client client;
+
+	public WorldJoin(int worldjoin) {
 		
 	}
 
@@ -60,8 +60,8 @@ public class World extends BasicGameState{
 		grid[player2.posX][player2.posY].passable = false;
 		score1 = 0;
 		score2 = 0;
-		thisPlayerNumber = 1;
-		server = new Server();
+		thisPlayerNumber = 2;
+		client = new Client();
 	}
 
 	public void render(GameContainer gc, StateBasedGame sbg, Graphics g) throws SlickException {
@@ -131,7 +131,7 @@ public class World extends BasicGameState{
 			}
 		}
 		if(gc.getInput().isKeyPressed(Input.KEY_ESCAPE)) {
-			server.stop = true;
+			client.stop = true;
 			if(!pause) {
 				pause = true;
 			}
@@ -148,6 +148,6 @@ public class World extends BasicGameState{
 	}
 
 	public int getID() {
-		return 3;
+		return 4;
 	}
 }
